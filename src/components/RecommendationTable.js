@@ -26,6 +26,9 @@ const RecommendationTable = ({ data }) => {
     );
   }
 
+  // Sort by probability descending (highest first)
+  const sortedData = [...data].sort((a, b) => b.Probability - a.Probability);
+
   // Animation variants
   const tableVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -40,6 +43,9 @@ const RecommendationTable = ({ data }) => {
     hidden: { opacity: 0, x: -20 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
   };
+
+  // Rank emojis or text for top 3
+  const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
 
   return (
     <MotionBox
@@ -64,10 +70,11 @@ const RecommendationTable = ({ data }) => {
             bgGradient="linear(to-br, green.900, green.700)"
             bgClip="text"
           >
-            Recommended Crops
+            Recommended Crops (Top 3)
           </Heading>
         </Box>
       </SimpleGrid>
+
       <Box overflowX="auto">
         <Table
           variant="striped"
@@ -83,7 +90,7 @@ const RecommendationTable = ({ data }) => {
                 color="green.700"
                 px={{ base: 2, md: 4 }}
               >
-                Crop
+                Rank
               </Th>
               <Th
                 fontSize={{ base: 'xs', md: 'sm' }}
@@ -91,22 +98,22 @@ const RecommendationTable = ({ data }) => {
                 color="green.700"
                 px={{ base: 2, md: 4 }}
               >
-                Probability Score
+                Crop
               </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {data.map((item, index) => (
+            {sortedData.slice(0, 3).map((item, index) => (
               <MotionTr
                 key={index}
                 variants={rowVariants}
                 whileHover={{ bg: 'green.50', transition: { duration: 0.2 } }}
               >
                 <Td px={{ base: 2, md: 4 }} fontSize={{ base: 'sm', md: 'md' }}>
-                  {item.Crop}
+                  {rankLabels[index] || `${index + 1}th`}
                 </Td>
                 <Td px={{ base: 2, md: 4 }} fontSize={{ base: 'sm', md: 'md' }}>
-                  {(item.Probability * 100).toFixed(2)}%
+                  {item.Crop}
                 </Td>
               </MotionTr>
             ))}
