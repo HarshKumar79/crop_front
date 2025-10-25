@@ -1,24 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Box, Heading, Container } from '@chakra-ui/react';
+import CropForm from './components/CropForm';
+import RecommendationTable from './components/RecommendationTable';
 
 function App() {
+  const [recommendations, setRecommendations] = useState([]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxW="container.xl" py={8}>
+      <Heading mb={6}>Crop Recommendation</Heading>
+      <CropForm onRecommendations={setRecommendations} />
+      <Box mt={8}>
+        <RecommendationTable data={recommendations} />
+      </Box>
+    </Container>
   );
 }
 
