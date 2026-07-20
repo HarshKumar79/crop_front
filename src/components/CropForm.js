@@ -14,7 +14,7 @@ import {
   Icon,
   Flex,
 } from '@chakra-ui/react';
-import { Sprout, MapPin, ShieldAlert, ArrowRight, Activity } from 'lucide-react';
+import { Sprout, MapPin, ShieldAlert, ArrowRight, Wheat } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { recommendCrops } from '../api';
 
@@ -45,7 +45,6 @@ const CropForm = ({ onRecommendations }) => {
     'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
   ];
 
-  // Fixed handleChange: State updates smoothly without unmounting inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -105,15 +104,15 @@ const CropForm = ({ onRecommendations }) => {
   };
 
   return (
-    <Flex minH="100vh" direction={{ base: 'column', lg: 'row' }} bg="white" fontFamily="'Inter', sans-serif">
+    <Flex minH="100vh" direction={{ base: 'column', lg: 'row' }} bg="#F9FAFB" fontFamily="'Inter', sans-serif">
       
-      {/* LEFT PANEL - Elegant Dark Section */}
+      {/* LEFT PANEL - Deep Leaf Green & Wheat Theme */}
       <MotionFlex
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
         w={{ base: '100%', lg: '40%' }}
-        bg="gray.900"
+        bgGradient="linear(to-br, green.900, green.800)"
         color="white"
         p={{ base: 10, lg: 20 }}
         direction="column"
@@ -121,37 +120,62 @@ const CropForm = ({ onRecommendations }) => {
         position="relative"
         overflow="hidden"
       >
-        {/* Abstract Background Element */}
-        <Box position="absolute" top="-10%" left="-20%" w="500px" h="500px" bg="whiteAlpha.100" borderRadius="full" filter="blur(100px)" pointerEvents="none" />
+        {/* Abstract Background Element - Morning Sun / Wheat Glow */}
+        <Box 
+          position="absolute" 
+          top="-10%" 
+          left="-20%" 
+          w="500px" 
+          h="500px" 
+          bg="yellow.400" 
+          opacity="0.15"
+          borderRadius="full" 
+          filter="blur(100px)" 
+          pointerEvents="none" 
+        />
+        
+        {/* Secondary subtle leaf glow */}
+        <Box 
+          position="absolute" 
+          bottom="-20%" 
+          right="-10%" 
+          w="400px" 
+          h="400px" 
+          bg="green.400" 
+          opacity="0.1"
+          borderRadius="full" 
+          filter="blur(80px)" 
+          pointerEvents="none" 
+        />
 
         <Box zIndex={1}>
-          <Icon as={Sprout} boxSize={10} color="gray.300" mb={8} />
+          <Icon as={Sprout} boxSize={12} color="yellow.400" mb={8} />
           <Heading as="h1" fontSize={{ base: '4xl', lg: '5xl' }} fontWeight="300" letterSpacing="tight" lineHeight="1.2" mb={6}>
             Predict your <br />
-            <Text as="span" fontWeight="700" color="white">harvest trajectory.</Text>
+            <Text as="span" fontWeight="700" color="yellow.400">harvest trajectory.</Text>
           </Heading>
-          <Text fontSize="lg" color="gray.400" maxW="md" lineHeight="1.6">
+          <Text fontSize="lg" color="green.100" maxW="md" lineHeight="1.6">
             Input your localized soil, climate, and geographic data to let our intelligence engine determine the highest-yield crops for your specific conditions.
           </Text>
         </Box>
 
-        <VStack align="start" spacing={6} mt={{ base: 12, lg: 0 }} zIndex={1}>
+        <VStack align="start" spacing={8} mt={{ base: 12, lg: 0 }} zIndex={1}>
           <Flex align="center" gap={4}>
-            <Flex align="center" justify="center" w={10} h={10} bg="whiteAlpha.100" borderRadius="md">
-              <Icon as={Activity} color="white" />
+            <Flex align="center" justify="center" w={12} h={12} bg="whiteAlpha.100" borderRadius="lg" border="1px solid" borderColor="whiteAlpha.200">
+              <Icon as={Wheat} color="yellow.300" boxSize={5} />
             </Flex>
             <Box>
-              <Text fontWeight="600" fontSize="sm">Data-Driven Insights</Text>
-              <Text fontSize="sm" color="gray.400">Backed by historical agricultural trends.</Text>
+              <Text fontWeight="600" fontSize="md">Yield Optimization</Text>
+              <Text fontSize="sm" color="green.200">Backed by historical agricultural trends.</Text>
             </Box>
           </Flex>
           <Flex align="center" gap={4}>
-            <Flex align="center" justify="center" w={10} h={10} bg="whiteAlpha.100" borderRadius="md">
-              <Icon as={MapPin} color="white" />
+            <Flex align="center" justify="center" w={12} h={12} bg="whiteAlpha.100" borderRadius="lg" border="1px solid" borderColor="whiteAlpha.200">
+              <Icon as={MapPin} color="yellow.300" boxSize={5} />
             </Flex>
             <Box>
-              <Text fontWeight="600" fontSize="sm">Hyper-Localized</Text>
-              <Text fontSize="sm" color="gray.400">Tailored exactly to your region and season.</Text>
+              <Text fontWeight="600" fontSize="md">Hyper-Localized</Text>
+              <Text fontSize="sm" color="green.200">Tailored exactly to your region and season.</Text>
             </Box>
           </Flex>
         </VStack>
@@ -160,7 +184,6 @@ const CropForm = ({ onRecommendations }) => {
       {/* RIGHT PANEL - Clean Minimalist Form */}
       <Flex
         w={{ base: '100%', lg: '60%' }}
-        bg="gray.50"
         p={{ base: 6, md: 12, lg: 20 }}
         align="center"
         justify="center"
@@ -173,16 +196,16 @@ const CropForm = ({ onRecommendations }) => {
             bg="white"
             p={{ base: 8, md: 12 }}
             borderRadius="2xl"
-            boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)"
+            boxShadow="0 10px 30px -10px rgba(0, 0, 0, 0.05)"
             border="1px solid"
             borderColor="gray.100"
           >
             <Box mb={10}>
               <Heading as="h2" fontSize="2xl" fontWeight="700" color="gray.900" mb={2}>
-                System Parameters
+                Field Parameters
               </Heading>
               <Text color="gray.500" fontSize="sm">
-                Fill in the required fields below to run the prediction model.
+                Fill in the required agricultural data below to run the prediction model.
               </Text>
             </Box>
 
@@ -207,27 +230,29 @@ const CropForm = ({ onRecommendations }) => {
                 
                 {/* Crop Year */}
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                     Crop Year
                   </FormLabel>
                   <Input
                     type="number" name="Crop_Year" value={formData.Crop_Year} onChange={handleChange}
                     placeholder="e.g., 2024" size="lg" fontSize="md"
                     bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                    _hover={{ borderColor: 'green.300' }} 
+                    _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                   />
                 </FormControl>
 
                 {/* Season */}
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                     Season
                   </FormLabel>
                   <Select
                     name="Season" value={formData.Season} onChange={handleChange}
                     placeholder="Select Season" size="lg" fontSize="md"
                     bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                    _hover={{ borderColor: 'green.300' }} 
+                    _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                   >
                     {seasons.map((s) => <option key={s} value={s}>{s}</option>)}
                   </Select>
@@ -235,14 +260,15 @@ const CropForm = ({ onRecommendations }) => {
 
                 {/* State */}
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                     State Location
                   </FormLabel>
                   <Select
                     name="State" value={formData.State} onChange={handleChange}
                     placeholder="Select State" size="lg" fontSize="md"
                     bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                    _hover={{ borderColor: 'green.300' }} 
+                    _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                   >
                     {indianStates.map((s) => <option key={s} value={s}>{s}</option>)}
                   </Select>
@@ -250,54 +276,58 @@ const CropForm = ({ onRecommendations }) => {
 
                 {/* Area */}
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                     Area (Hectares)
                   </FormLabel>
                   <Input
                     type="number" step="0.01" name="Area" value={formData.Area} onChange={handleChange}
                     placeholder="0.00" size="lg" fontSize="md"
                     bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                    _hover={{ borderColor: 'green.300' }} 
+                    _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                   />
                 </FormControl>
 
                 {/* Fertilizer */}
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                     Fertilizer (KG)
                   </FormLabel>
                   <Input
                     type="number" step="0.01" name="Fertilizer" value={formData.Fertilizer} onChange={handleChange}
                     placeholder="0.00" size="lg" fontSize="md"
                     bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                    _hover={{ borderColor: 'green.300' }} 
+                    _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                   />
                 </FormControl>
 
                 {/* Pesticide */}
                 <FormControl isRequired>
-                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                     Pesticide (KG)
                   </FormLabel>
                   <Input
                     type="number" step="0.01" name="Pesticide" value={formData.Pesticide} onChange={handleChange}
                     placeholder="0.00" size="lg" fontSize="md"
                     bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                    _hover={{ borderColor: 'green.300' }} 
+                    _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                   />
                 </FormControl>
               </SimpleGrid>
 
               {/* Annual Rainfall - Full Width */}
               <FormControl>
-                <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                <FormLabel fontSize="xs" fontWeight="600" color="gray.600" textTransform="uppercase" letterSpacing="wide">
                   Annual Rainfall (MM) <Text as="span" color="gray.400" textTransform="none">— Optional</Text>
                 </FormLabel>
                 <Input
                   type="number" step="0.01" name="Annual_Rainfall" value={formData.Annual_Rainfall} onChange={handleChange}
                   placeholder="e.g., 1200" size="lg" fontSize="md"
                   bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
-                  _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  _hover={{ borderColor: 'green.300' }} 
+                  _focus={{ bg: 'white', borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
                 />
               </FormControl>
 
@@ -307,7 +337,7 @@ const CropForm = ({ onRecommendations }) => {
                 w="full"
                 size="lg"
                 h={14}
-                bg="gray.900"
+                bg="green.600"
                 color="white"
                 fontSize="md"
                 fontWeight="600"
@@ -315,8 +345,8 @@ const CropForm = ({ onRecommendations }) => {
                 isLoading={isLoading}
                 loadingText="Running Analysis..."
                 rightIcon={<Icon as={ArrowRight} boxSize={5} />}
-                _hover={{ bg: 'gray.800', transform: 'translateY(-1px)', boxShadow: 'lg' }}
-                _active={{ bg: 'black', transform: 'translateY(0)' }}
+                _hover={{ bg: 'green.700', transform: 'translateY(-1px)', boxShadow: 'lg' }}
+                _active={{ bg: 'green.800', transform: 'translateY(0)' }}
                 transition="all 0.2s"
                 mt={4}
               >
