@@ -155,7 +155,7 @@ const CropForm = ({ onRecommendations }) => {
             <Text as="span" fontWeight="700" color="yellow.400">harvest trajectory.</Text>
           </Heading>
           <Text fontSize="lg" color="green.100" maxW="md" lineHeight="1.6">
-            Input your localized soil, climate, and geographic data to let our intelligence engine determine the highest-yield crops for your specific conditions.
+            Input your state, Hectares, and geographic data to let our intelligence engine determine the highest-yield crops for your specific conditions.
           </Text>
         </Box>
 
