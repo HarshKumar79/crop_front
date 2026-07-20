@@ -7,21 +7,19 @@ import {
   Input,
   Select,
   Button,
-  Icon,
   Heading,
   Text,
   SimpleGrid,
   useToast,
-  InputGroup,
-  InputLeftElement,
-  Container,
+  Icon,
+  Flex,
 } from '@chakra-ui/react';
-import { Sprout, Cloud, Droplets, TrendingUp, Leaf, MapPin, Calendar, Layers, FlaskConical, Bug } from 'lucide-react';
+import { Sprout, MapPin, Calendar, CloudRain, ShieldAlert, ArrowRight, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { recommendCrops } from '../api';
 
 const MotionBox = motion(Box);
-const MotionButton = motion(Button);
+const MotionFlex = motion(Flex);
 
 const CropForm = ({ onRecommendations }) => {
   const [formData, setFormData] = useState({
@@ -33,7 +31,7 @@ const CropForm = ({ onRecommendations }) => {
     Pesticide: '',
     Annual_Rainfall: '',
   });
-  const [focused, setFocused] = useState({});
+  
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
@@ -47,26 +45,24 @@ const CropForm = ({ onRecommendations }) => {
     'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
   ];
 
+  // Fixed handleChange: State updates smoothly without unmounting inputs
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError(null);
   };
-
-  const handleFocus = (field) => setFocused({ ...focused, [field]: true });
-  const handleBlur = (field) => setFocused({ ...focused, [field]: false });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    // Client-side validation
+    // Validation
     if (!formData.Crop_Year || isNaN(formData.Crop_Year) || formData.Crop_Year < 1900 || formData.Crop_Year > 2100) {
-      setError('Please enter a valid Crop Year (1900-2100).');
-      return;
+      return setError('Please enter a valid Crop Year (e.g., 2024).');
     }
     if (!formData.Season) return setError('Please select a Season.');
     if (!formData.State) return setError('Please select a State.');
-    if (!formData.Area || formData.Area <= 0) return setError('Please enter a valid Area (greater than 0).');
+    if (!formData.Area || formData.Area <= 0) return setError('Please enter a valid Area greater than 0.');
     if (!formData.Fertilizer || formData.Fertilizer < 0) return setError('Please enter a valid Fertilizer amount.');
     if (!formData.Pesticide || formData.Pesticide < 0) return setError('Please enter a valid Pesticide amount.');
     if (formData.Annual_Rainfall && formData.Annual_Rainfall < 0) return setError('Annual Rainfall must be non-negative.');
@@ -87,17 +83,17 @@ const CropForm = ({ onRecommendations }) => {
       onRecommendations(recommendations);
       toast({
         title: 'Analysis Complete',
-        description: 'We have generated optimal crop recommendations for you.',
+        description: 'Optimal crops generated successfully.',
         status: 'success',
         duration: 4000,
         isClosable: true,
         position: 'top-right',
       });
     } catch (error) {
-      setError(`Error fetching recommendations: ${error.message}`);
+      setError(`Failed to fetch recommendations: ${error.message}`);
       toast({
         title: 'Error',
-        description: `Failed to fetch recommendations: ${error.message}`,
+        description: error.message,
         status: 'error',
         duration: 4000,
         isClosable: true,
@@ -108,191 +104,229 @@ const CropForm = ({ onRecommendations }) => {
     }
   };
 
-  // Staggered Animation Variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 12 } },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 100 } },
-    hover: { y: -8, scale: 1.02, boxShadow: '0 20px 40px rgba(46, 125, 50, 0.15)' },
-  };
-
-  // Helper component for styled inputs
-  const StyledInput = ({ icon, label, name, placeholder, type = "text", step }) => (
-    <FormControl isRequired={name !== 'Annual_Rainfall'} isInvalid={focused[name] && !formData[name] && name !== 'Annual_Rainfall'}>
-      <FormLabel fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="widest" color={focused[name] ? 'green.600' : 'gray.500'} transition="color 0.3s ease" mb={3}>
-        {label}
-      </FormLabel>
-      <InputGroup size="lg">
-        <InputLeftElement pointerEvents="none" h="full" pl={2}>
-          <Icon as={icon} color={focused[name] ? 'green.500' : 'gray.400'} boxSize={5} transition="color 0.3s ease" />
-        </InputLeftElement>
-        <Input
-          type={type}
-          name={name}
-          step={step}
-          value={formData[name]}
-          onChange={handleChange}
-          onFocus={() => handleFocus(name)}
-          onBlur={() => handleBlur(name)}
-          placeholder={placeholder}
-          bg="whiteAlpha.800"
-          border="2px solid"
-          borderColor="gray.100"
-          borderRadius="xl"
-          pl={12}
-          h="60px"
-          _hover={{ borderColor: 'green.200', bg: 'white' }}
-          _focus={{ borderColor: 'green.500', bg: 'white', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
-          transition="all 0.3s ease"
-        />
-      </InputGroup>
-    </FormControl>
-  );
-
   return (
-    <Box minH="100vh" bg="#f2fcf5" position="relative" overflow="hidden" fontFamily="'Inter', system-ui, sans-serif">
-      {/* Animated Abstract Background */}
-      <Box position="absolute" inset={0} pointerEvents="none" zIndex={0} overflow="hidden">
-        {/* Glowing Orbs */}
-        <MotionBox
-          position="absolute" top="-10%" left="-10%" w="50vw" h="50vw" borderRadius="full"
-          bg="green.300" filter="blur(120px)" opacity={0.3}
-          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <MotionBox
-          position="absolute" bottom="-20%" right="-10%" w="60vw" h="60vw" borderRadius="full"
-          bg="teal.200" filter="blur(150px)" opacity={0.25}
-          animate={{ scale: [1.2, 1, 1.2], x: [0, -50, 0], y: [0, -30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        
-        {/* Floating Icons */}
-        <MotionBox position="absolute" top="15%" left="8%" color="green.400" opacity={0.2} animate={{ y: [-20, 20, -20], rotate: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}>
-          <Icon as={Sprout} boxSize={14} />
-        </MotionBox>
-        <MotionBox position="absolute" top="25%" right="12%" color="teal.400" opacity={0.2} animate={{ y: [20, -20, 20], rotate: [0, -15, 0] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}>
-          <Icon as={Leaf} boxSize={12} />
-        </MotionBox>
-        <MotionBox position="absolute" bottom="20%" left="15%" color="green.300" opacity={0.2} animate={{ y: [-15, 15, -15] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}>
-          <Icon as={Droplets} boxSize={16} />
-        </MotionBox>
-      </Box>
+    <Flex minH="100vh" direction={{ base: 'column', lg: 'row' }} bg="white" fontFamily="'Inter', sans-serif">
+      
+      {/* LEFT PANEL - Elegant Dark Section */}
+      <MotionFlex
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        w={{ base: '100%', lg: '40%' }}
+        bg="gray.900"
+        color="white"
+        p={{ base: 10, lg: 20 }}
+        direction="column"
+        justify="space-between"
+        position="relative"
+        overflow="hidden"
+      >
+        {/* Abstract Background Element */}
+        <Box position="absolute" top="-10%" left="-20%" w="500px" h="500px" bg="whiteAlpha.100" borderRadius="full" filter="blur(100px)" pointerEvents="none" />
 
-      <Container maxW="container.xl" py={{ base: 12, md: 20 }} position="relative" zIndex={10}>
-        <MotionBox variants={containerVariants} initial="hidden" animate="visible">
-          
-          {/* Header Section */}
-          <MotionBox variants={itemVariants} textAlign="center" mb={16}>
-            <Box display="inline-flex" alignItems="center" justifyContent="center" mb={6} p={4} bg="white" borderRadius="2xl" boxShadow="xl">
-              <Box bgGradient="linear(to-r, green.400, teal.500)" p={3} borderRadius="xl">
-                <Icon as={TrendingUp} color="white" boxSize={8} />
-              </Box>
+        <Box zIndex={1}>
+          <Icon as={Sprout} boxSize={10} color="gray.300" mb={8} />
+          <Heading as="h1" fontSize={{ base: '4xl', lg: '5xl' }} fontWeight="300" letterSpacing="tight" lineHeight="1.2" mb={6}>
+            Predict your <br />
+            <Text as="span" fontWeight="700" color="white">harvest trajectory.</Text>
+          </Heading>
+          <Text fontSize="lg" color="gray.400" maxW="md" lineHeight="1.6">
+            Input your localized soil, climate, and geographic data to let our intelligence engine determine the highest-yield crops for your specific conditions.
+          </Text>
+        </Box>
+
+        <VStack align="start" spacing={6} mt={{ base: 12, lg: 0 }} zIndex={1}>
+          <Flex align="center" gap={4}>
+            <Flex align="center" justify="center" w={10} h={10} bg="whiteAlpha.100" borderRadius="md">
+              <Icon as={Activity} color="white" />
+            </Flex>
+            <Box>
+              <Text fontWeight="600" fontSize="sm">Data-Driven Insights</Text>
+              <Text fontSize="sm" color="gray.400">Backed by historical agricultural trends.</Text>
             </Box>
-            <Heading as="h1" fontSize={{ base: '3xl', md: '5xl', lg: '6xl' }} fontWeight="900" letterSpacing="tight" mb={6}>
-              Smart Crop <Text as="span" bgGradient="linear(to-r, green.500, teal.400)" bgClip="text">Prediction</Text>
-            </Heading>
-            <Text fontSize={{ base: 'lg', md: 'xl' }} color="gray.600" maxW="2xl" mx="auto" lineHeight="tall">
-              Leverage advanced AI to analyze your soil and climate data. Discover the most profitable and sustainable crops for your farm.
-            </Text>
-          </MotionBox>
+          </Flex>
+          <Flex align="center" gap={4}>
+            <Flex align="center" justify="center" w={10} h={10} bg="whiteAlpha.100" borderRadius="md">
+              <Icon as={MapPin} color="white" />
+            </Flex>
+            <Box>
+              <Text fontWeight="600" fontSize="sm">Hyper-Localized</Text>
+              <Text fontSize="sm" color="gray.400">Tailored exactly to your region and season.</Text>
+            </Box>
+          </Flex>
+        </VStack>
+      </MotionFlex>
 
-          {/* Form and Info Section Layout */}
-          <Box display="flex" flexDirection={{ base: 'column', xl: 'row' }} gap={12} alignItems="flex-start">
-            
-            {/* Main Form Card */}
-            <MotionBox variants={itemVariants} flex="1" w="full">
-              <Box bg="rgba(255, 255, 255, 0.85)" backdropFilter="blur(16px)" border="1px solid" borderColor="white" borderRadius="3xl" boxShadow="0 25px 50px -12px rgba(0, 0, 0, 0.08)" p={{ base: 6, md: 10 }}>
-                
-                <AnimatePresence>
-                  {error && (
-                    <MotionBox initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} mb={6}>
-                      <Box p={4} bg="red.50" borderLeft="4px solid" borderColor="red.500" borderRadius="md" color="red.700" display="flex" alignItems="center" gap={3}>
-                        <Icon as={Cloud} color="red.500" />
-                        <Text fontWeight="medium">{error}</Text>
-                      </Box>
-                    </MotionBox>
-                  )}
-                </AnimatePresence>
+      {/* RIGHT PANEL - Clean Minimalist Form */}
+      <Flex
+        w={{ base: '100%', lg: '60%' }}
+        bg="gray.50"
+        p={{ base: 6, md: 12, lg: 20 }}
+        align="center"
+        justify="center"
+      >
+        <Box w="full" maxW="800px">
+          <MotionBox
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+            bg="white"
+            p={{ base: 8, md: 12 }}
+            borderRadius="2xl"
+            boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)"
+            border="1px solid"
+            borderColor="gray.100"
+          >
+            <Box mb={10}>
+              <Heading as="h2" fontSize="2xl" fontWeight="700" color="gray.900" mb={2}>
+                System Parameters
+              </Heading>
+              <Text color="gray.500" fontSize="sm">
+                Fill in the required fields below to run the prediction model.
+              </Text>
+            </Box>
 
-                <VStack spacing={8} as="form" onSubmit={handleSubmit}>
-                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8} w="full">
-                    <StyledInput icon={Calendar} label="Crop Year" name="Crop_Year" placeholder="e.g., 2025" type="number" />
-                    
-                    <FormControl isRequired isInvalid={focused.Season && !formData.Season}>
-                      <FormLabel fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="widest" color={focused.Season ? 'green.600' : 'gray.500'} mb={3}>Season</FormLabel>
-                      <Select
-                        name="Season" value={formData.Season} onChange={handleChange} onFocus={() => handleFocus('Season')} onBlur={() => handleBlur('Season')}
-                        placeholder="Select Season" size="lg" h="60px" bg="whiteAlpha.800" border="2px solid" borderColor="gray.100" borderRadius="xl"
-                        _hover={{ borderColor: 'green.200' }} _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
-                      >
-                        {seasons.map(s => <option key={s} value={s}>{s}</option>)}
-                      </Select>
-                    </FormControl>
-
-                    <FormControl isRequired isInvalid={focused.State && !formData.State}>
-                      <FormLabel fontSize="xs" fontWeight="700" textTransform="uppercase" letterSpacing="widest" color={focused.State ? 'green.600' : 'gray.500'} mb={3}>State</FormLabel>
-                      <Select
-                        name="State" value={formData.State} onChange={handleChange} onFocus={() => handleFocus('State')} onBlur={() => handleBlur('State')}
-                        placeholder="Select State" size="lg" h="60px" bg="whiteAlpha.800" border="2px solid" borderColor="gray.100" borderRadius="xl"
-                        _hover={{ borderColor: 'green.200' }} _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 1px var(--chakra-colors-green-500)' }}
-                      >
-                        {indianStates.map(s => <option key={s} value={s}>{s}</option>)}
-                      </Select>
-                    </FormControl>
-
-                    <StyledInput icon={MapPin} label="Area (Hectares)" name="Area" placeholder="e.g., 100" type="number" step="0.01" />
-                    <StyledInput icon={FlaskConical} label="Fertilizer (KG)" name="Fertilizer" placeholder="e.g., 200" type="number" step="0.01" />
-                    <StyledInput icon={Bug} label="Pesticide (KG)" name="Pesticide" placeholder="e.g., 50" type="number" step="0.01" />
-                  </SimpleGrid>
-
-                  <Box w="full">
-                    <StyledInput icon={Droplets} label="Annual Rainfall (MM) - Optional" name="Annual_Rainfall" placeholder="e.g., 1200" type="number" step="0.01" />
-                  </Box>
-
-                  <MotionButton
-                    type="submit" size="lg" w="full" h="70px" bgGradient="linear(to-r, green.500, teal.500)" color="white"
-                    fontWeight="bold" fontSize="lg" borderRadius="xl" boxShadow="0 10px 20px rgba(56, 178, 172, 0.3)"
-                    whileHover={{ scale: 1.02, boxShadow: '0 15px 25px rgba(56, 178, 172, 0.4)' }}
-                    whileTap={{ scale: 0.98 }} isLoading={isLoading} loadingText="Analyzing Data..."
-                    rightIcon={<Icon as={TrendingUp} boxSize={6} />}
-                  >
-                    Generate Recommendations
-                  </MotionButton>
-                </VStack>
-              </Box>
-            </MotionBox>
-
-            {/* Sidebar Info Cards */}
-            <Box w={{ base: 'full', xl: '400px' }} display="flex" flexDirection={{ base: 'row', xl: 'column' }} gap={6} flexWrap="wrap">
-              {[
-                { title: 'Smart Analysis', desc: 'AI-powered models calculate the best crop yield based on historical patterns.', icon: Layers, color: 'blue' },
-                { title: 'Climate Aware', desc: 'Takes localized weather and rainfall data into account for precise accuracy.', icon: Droplets, color: 'teal' },
-                { title: 'Maximize ROI', desc: 'Optimize your fertilizer and area usage to ensure maximum profitability.', icon: TrendingUp, color: 'green' }
-              ].map((feature, i) => (
-                <MotionBox key={i} variants={cardVariants} whileHover="hover" flex={{ base: '1 1 300px', xl: 'none' }} bg="white" p={6} borderRadius="2xl" border="1px solid" borderColor="gray.100" boxShadow="sm">
-                  <Box bg={`${feature.color}.50`} w="50px" h="50px" borderRadius="xl" display="flex" alignItems="center" justifyContent="center" mb={4}>
-                    <Icon as={feature.icon} color={`${feature.color}.500`} boxSize={6} />
-                  </Box>
-                  <Heading as="h3" fontSize="lg" fontWeight="bold" color="gray.800" mb={2}>{feature.title}</Heading>
-                  <Text color="gray.500" fontSize="sm" lineHeight="tall">{feature.desc}</Text>
+            <AnimatePresence>
+              {error && (
+                <MotionBox
+                  initial={{ opacity: 0, height: 0, mb: 0 }}
+                  animate={{ opacity: 1, height: 'auto', mb: 24 }}
+                  exit={{ opacity: 0, height: 0, mb: 0 }}
+                  overflow="hidden"
+                >
+                  <Flex p={4} bg="red.50" color="red.700" borderRadius="lg" align="center" gap={3} border="1px solid" borderColor="red.100">
+                    <Icon as={ShieldAlert} boxSize={5} />
+                    <Text fontSize="sm" fontWeight="500">{error}</Text>
+                  </Flex>
                 </MotionBox>
-              ))}
-            </Box>
+              )}
+            </AnimatePresence>
 
-          </Box>
-        </MotionBox>
-      </Container>
-    </Box>
+            <VStack spacing={8} as="form" onSubmit={handleSubmit}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} w="full">
+                
+                {/* Crop Year */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                    Crop Year
+                  </FormLabel>
+                  <Input
+                    type="number" name="Crop_Year" value={formData.Crop_Year} onChange={handleChange}
+                    placeholder="e.g., 2024" size="lg" fontSize="md"
+                    bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  />
+                </FormControl>
+
+                {/* Season */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                    Season
+                  </FormLabel>
+                  <Select
+                    name="Season" value={formData.Season} onChange={handleChange}
+                    placeholder="Select Season" size="lg" fontSize="md"
+                    bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  >
+                    {seasons.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </Select>
+                </FormControl>
+
+                {/* State */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                    State Location
+                  </FormLabel>
+                  <Select
+                    name="State" value={formData.State} onChange={handleChange}
+                    placeholder="Select State" size="lg" fontSize="md"
+                    bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  >
+                    {indianStates.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </Select>
+                </FormControl>
+
+                {/* Area */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                    Area (Hectares)
+                  </FormLabel>
+                  <Input
+                    type="number" step="0.01" name="Area" value={formData.Area} onChange={handleChange}
+                    placeholder="0.00" size="lg" fontSize="md"
+                    bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  />
+                </FormControl>
+
+                {/* Fertilizer */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                    Fertilizer (KG)
+                  </FormLabel>
+                  <Input
+                    type="number" step="0.01" name="Fertilizer" value={formData.Fertilizer} onChange={handleChange}
+                    placeholder="0.00" size="lg" fontSize="md"
+                    bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  />
+                </FormControl>
+
+                {/* Pesticide */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                    Pesticide (KG)
+                  </FormLabel>
+                  <Input
+                    type="number" step="0.01" name="Pesticide" value={formData.Pesticide} onChange={handleChange}
+                    placeholder="0.00" size="lg" fontSize="md"
+                    bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                    _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                  />
+                </FormControl>
+              </SimpleGrid>
+
+              {/* Annual Rainfall - Full Width */}
+              <FormControl>
+                <FormLabel fontSize="xs" fontWeight="600" color="gray.700" textTransform="uppercase" letterSpacing="wide">
+                  Annual Rainfall (MM) <Text as="span" color="gray.400" textTransform="none">— Optional</Text>
+                </FormLabel>
+                <Input
+                  type="number" step="0.01" name="Annual_Rainfall" value={formData.Annual_Rainfall} onChange={handleChange}
+                  placeholder="e.g., 1200" size="lg" fontSize="md"
+                  bg="gray.50" border="1px solid" borderColor="gray.200" borderRadius="lg"
+                  _hover={{ borderColor: 'gray.300' }} _focus={{ bg: 'white', borderColor: 'gray.900', boxShadow: 'none' }}
+                />
+              </FormControl>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                w="full"
+                size="lg"
+                h={14}
+                bg="gray.900"
+                color="white"
+                fontSize="md"
+                fontWeight="600"
+                borderRadius="lg"
+                isLoading={isLoading}
+                loadingText="Running Analysis..."
+                rightIcon={<Icon as={ArrowRight} boxSize={5} />}
+                _hover={{ bg: 'gray.800', transform: 'translateY(-1px)', boxShadow: 'lg' }}
+                _active={{ bg: 'black', transform: 'translateY(0)' }}
+                transition="all 0.2s"
+                mt={4}
+              >
+                Run Prediction Model
+              </Button>
+            </VStack>
+          </MotionBox>
+        </Box>
+      </Flex>
+    </Flex>
   );
 };
 
