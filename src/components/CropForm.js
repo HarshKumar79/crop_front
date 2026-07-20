@@ -14,7 +14,7 @@ import {
   Icon,
   Flex,
 } from '@chakra-ui/react';
-import { Sprout, MapPin, Calendar, CloudRain, ShieldAlert, ArrowRight, Activity } from 'lucide-react';
+import { Sprout, MapPin, ShieldAlert, ArrowRight, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { recommendCrops } from '../api';
 
